@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Security+ Lab Screenshot Guides - Iframe Generator</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f0f4f8;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        header {
+            background: linear-gradient(135deg, #1a5276 0%, #2980b9 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 10px 10px 0 0;
+            text-align: center;
+        }
+        header h1 {
+            font-size: 1.8em;
+            margin-bottom: 8px;
+        }
+        header p {
+            opacity: 0.9;
+            font-size: 1.1em;
+        }
+        .main-content {
+            background: white;
+            padding: 30px;
+            border-radius: 0 0 10px 10px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+        .section {
+            margin-bottom: 30px;
+        }
+        .section-title {
+            font-size: 1.2em;
+            color: #1a5276;
+            margin-bottom: 15px;
+            padding-bottom: 8px;
+            border-bottom: 2px solid #e0e0e0;
+        }
+        .lab-selector {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .lab-selector select {
+            padding: 12px 15px;
+            font-size: 1em;
+            border: 2px solid #ddd;
+            border-radius: 6px;
+            background: white;
+            cursor: pointer;
+            transition: border-color 0.3s;
+        }
+        .lab-selector select:focus {
+            outline: none;
+            border-color: #2980b9;
+        }
+        .options-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+        }
+        .option-group {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+        .option-group label {
+            font-weight: 600;
+            color: #555;
+            font-size: 0.9em;
+        }
+        .option-group input, .option-group select {
+            padding: 10px 12px;
+            font-size: 1em;
+            border: 2px solid #ddd;
+            border-radius: 6px;
+            transition: border-color 0.3s;
+        }
+        .option-group input:focus, .option-group select:focus {
+            outline: none;
+            border-color: #2980b9;
+        }
+        .code-output {
+            background: #1e1e1e;
+            border-radius: 8px;
+            padding: 20px;
+            position: relative;
+        }
+        .code-output pre {
+            color: #d4d4d4;
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 0.9em;
+            white-space: pre-wrap;
+            word-break: break-all;
+            margin: 0;
+        }
+        .code-output .tag {
+            color: #569cd6;
+        }
+        .code-output .attr {
+            color: #9cdcfe;
+        }
+        .code-output .value {
+            color: #ce9178;
+        }
+        .copy-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: #2980b9;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.85em;
+            transition: background 0.3s;
+        }
+        .copy-btn:hover {
+            background: #1a5276;
+        }
+        .copy-btn.copied {
+            background: #27ae60;
+        }
+        .preview-container {
+            border: 2px dashed #ddd;
+            border-radius: 8px;
+            padding: 20px;
+            background: #fafafa;
+            min-height: 200px;
+        }
+        .preview-container iframe {
+            display: block;
+            margin: 0 auto;
+            border-radius: 4px;
+        }
+        .no-preview {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 200px;
+            color: #999;
+            font-style: italic;
+        }
+        .lab-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+        .lab-card {
+            background: #f8f9fa;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 15px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .lab-card:hover {
+            border-color: #2980b9;
+            box-shadow: 0 2px 8px rgba(41, 128, 185, 0.2);
+        }
+        .lab-card.selected {
+            border-color: #2980b9;
+            background: #e8f4fc;
+        }
+        .lab-card h3 {
+            font-size: 0.95em;
+            color: #1a5276;
+            margin-bottom: 5px;
+        }
+        .lab-card p {
+            font-size: 0.8em;
+            color: #666;
+        }
+        .direct-link {
+            margin-top: 15px;
+            padding: 15px;
+            background: #e8f4fc;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        .direct-link a {
+            color: #2980b9;
+            text-decoration: none;
+            word-break: break-all;
+        }
+        .direct-link a:hover {
+            text-decoration: underline;
+        }
+        .btn {
+            background: #2980b9;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.9em;
+            transition: background 0.3s;
+        }
+        .btn:hover {
+            background: #1a5276;
+        }
+        .btn-secondary {
+            background: #6c757d;
+        }
+        .btn-secondary:hover {
+            background: #545b62;
+        }
+        footer {
+            text-align: center;
+            padding: 20px;
+            color: #666;
+            font-size: 0.85em;
+            margin-top: 20px;
+        }
+        @media (max-width: 768px) {
+            header h1 {
+                font-size: 1.4em;
+            }
+            .main-content {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>CompTIA Security+ Lab Screenshot Guides</h1>
+            <p>Iframe Code Generator for LMS Integration</p>
+        </header>
+        
+        <div class="main-content">
+            <!-- Lab Selection -->
+            <div class="section">
+                <h2 class="section-title">1. Select a Lab</h2>
+                <div class="lab-selector">
+                    <select id="labSelect" onchange="updatePreview()">
+                        <option value="">-- Select a Lab --</option>
+                        <option value="SecPlus_v4_lab_01_screenshots.html">Lab 1: Social Engineering Attack</option>
+                        <option value="SecPlus_v4_lab_02_screenshots.html">Lab 2: Malware and Application Attacks</option>
+                        <option value="SecPlus_v4_lab_03_screenshots.html">Lab 3: Web Application Attacks</option>
+                        <option value="SecPlus_v4_lab_04_screenshots.html">Lab 4: ARP Poisoning</option>
+                        <option value="SecPlus_v4_lab_05_screenshots.html">Lab 5: Attack Types and Mitigation</option>
+                        <option value="SecPlus_v4_lab_06_screenshots.html">Lab 6: OpenVAS Vulnerability Checks</option>
+                        <option value="SecPlus_v4_lab_07_screenshots.html">Lab 7: Active Reconnaissance</option>
+                        <option value="SecPlus_v4_lab_08_screenshots.html">Lab 8: NIDS/HIDS Alerts</option>
+                        <option value="SecPlus_v4_lab_09_screenshots.html">Lab 9: Virtualization and GPO</option>
+                        <option value="SecPlus_v4_lab_10_screenshots.html">Lab 10: JavaScript Obfuscation</option>
+                        <option value="SecPlus_v4_lab_11_screenshots.html">Lab 11: RADIUS Server</option>
+                        <option value="SecPlus_v4_lab_12_screenshots.html">Lab 12: Load Balancer</option>
+                        <option value="SecPlus_v4_lab_13_screenshots.html">Lab 13: IoT Management</option>
+                        <option value="SecPlus_v4_lab_14_screenshots.html">Lab 14: Cryptography Concepts</option>
+                        <option value="SecPlus_v4_lab_15_screenshots.html">Lab 15: Common Protocols</option>
+                        <option value="SecPlus_v4_lab_16_screenshots.html">Lab 16: VeraCrypt Encryption</option>
+                        <option value="SecPlus_v4_lab_17_screenshots.html">Lab 17: Network Firewall</option>
+                        <option value="SecPlus_v4_lab_18_screenshots.html">Lab 18: Wireless Attacks</option>
+                        <option value="SecPlus_v4_lab_19_screenshots.html">Lab 19: Android Security</option>
+                        <option value="SecPlus_v4_lab_20_screenshots.html">Lab 20: Linux Account Management</option>
+                        <option value="SecPlus_v4_lab_21_screenshots.html">Lab 21: PKI Management</option>
+                        <option value="SecPlus_v4_lab_22_screenshots.html">Lab 22: Network Traffic Capture</option>
+                        <option value="SecPlus_v4_lab_23_screenshots.html">Lab 23: Incident Response</option>
+                        <option value="SecPlus_v4_lab_24_screenshots.html">Lab 24: Backups</option>
+                        <option value="SecPlus_v4_lab_25_screenshots.html">Lab 25: Autopsy Forensics</option>
+                    </select>
+                </div>
+            </div>
+            
+            <!-- Iframe Options -->
+            <div class="section">
+                <h2 class="section-title">2. Configure Iframe Options</h2>
+                <div class="options-grid">
+                    <div class="option-group">
+                        <label for="iframeWidth">Width</label>
+                        <input type="text" id="iframeWidth" value="100%" oninput="updatePreview()">
+                    </div>
+                    <div class="option-group">
+                        <label for="iframeHeight">Height</label>
+                        <input type="text" id="iframeHeight" value="600px" oninput="updatePreview()">
+                    </div>
+                    <div class="option-group">
+                        <label for="iframeBorder">Border</label>
+                        <select id="iframeBorder" onchange="updatePreview()">
+                            <option value="none">None</option>
+                            <option value="1px solid #ccc">Light Gray</option>
+                            <option value="1px solid #000">Black</option>
+                            <option value="2px solid #2980b9">Blue</option>
+                        </select>
+                    </div>
+                    <div class="option-group">
+                        <label for="iframeScroll">Scrolling</label>
+                        <select id="iframeScroll" onchange="updatePreview()">
+                            <option value="auto">Auto</option>
+                            <option value="yes">Yes</option>
+                            <option value="no">No</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Generated Code -->
+            <div class="section">
+                <h2 class="section-title">3. Generated Iframe Code</h2>
+                <div class="code-output">
+                    <button class="copy-btn" onclick="copyCode()">Copy Code</button>
+                    <pre id="codeOutput"><span class="tag">&lt;iframe</span> <span class="attr">src</span>=<span class="value">""</span>&gt;<span class="tag">&lt;/iframe&gt;</span></pre>
+                </div>
+                <div class="direct-link" id="directLinkSection" style="display: none;">
+                    <strong>Direct Link:</strong>
+                    <a href="#" id="directLink" target="_blank"></a>
+                    <button class="btn btn-secondary" onclick="copyDirectLink()">Copy Link</button>
+                </div>
+            </div>
+            
+            <!-- Preview -->
+            <div class="section">
+                <h2 class="section-title">4. Preview</h2>
+                <div class="preview-container" id="previewContainer">
+                    <div class="no-preview">Select a lab above to see preview</div>
+                </div>
+            </div>
+        </div>
+        
+        <footer>
+            CompTIA Security+ v4 Labs | Screenshot Submission Guides
+        </footer>
+    </div>
+    
+    <script>
+        const BASE_URL = 'https://mqaissaunee-bcc.github.io/sec_plus_labs/';
+        
+        function updatePreview() {
+            const labFile = document.getElementById('labSelect').value;
+            const width = document.getElementById('iframeWidth').value;
+            const height = document.getElementById('iframeHeight').value;
+            const border = document.getElementById('iframeBorder').value;
+            const scroll = document.getElementById('iframeScroll').value;
+            
+            const codeOutput = document.getElementById('codeOutput');
+            const previewContainer = document.getElementById('previewContainer');
+            const directLinkSection = document.getElementById('directLinkSection');
+            const directLink = document.getElementById('directLink');
+            
+            if (!labFile) {
+                codeOutput.innerHTML = '<span class="tag">&lt;iframe</span> <span class="attr">src</span>=<span class="value">""</span><span class="tag">&gt;&lt;/iframe&gt;</span>';
+                previewContainer.innerHTML = '<div class="no-preview">Select a lab above to see preview</div>';
+                directLinkSection.style.display = 'none';
+                return;
+            }
+            
+            const fullUrl = BASE_URL + labFile;
+            
+            // Build style string
+            let styleAttr = `width: ${width}; height: ${height};`;
+            if (border !== 'none') {
+                styleAttr += ` border: ${border};`;
+            } else {
+                styleAttr += ' border: none;';
+            }
+            
+            // Generate code with syntax highlighting
+            let code = `<span class="tag">&lt;iframe</span>\n`;
+            code += `    <span class="attr">src</span>=<span class="value">"${fullUrl}"</span>\n`;
+            code += `    <span class="attr">style</span>=<span class="value">"${styleAttr}"</span>\n`;
+            code += `    <span class="attr">scrolling</span>=<span class="value">"${scroll}"</span>\n`;
+            code += `    <span class="attr">allowfullscreen</span>\n`;
+            code += `<span class="tag">&gt;&lt;/iframe&gt;</span>`;
+            
+            codeOutput.innerHTML = code;
+            
+            // Update direct link
+            directLink.href = fullUrl;
+            directLink.textContent = fullUrl;
+            directLinkSection.style.display = 'flex';
+            
+            // Generate preview
+            const iframe = document.createElement('iframe');
+            iframe.src = fullUrl;
+            iframe.style.width = width;
+            iframe.style.height = height;
+            iframe.style.border = border === 'none' ? 'none' : border;
+            iframe.scrolling = scroll;
+            iframe.allowFullscreen = true;
+            
+            previewContainer.innerHTML = '';
+            previewContainer.appendChild(iframe);
+        }
+        
+        function copyCode() {
+            const labFile = document.getElementById('labSelect').value;
+            if (!labFile) {
+                alert('Please select a lab first.');
+                return;
+            }
+            
+            const width = document.getElementById('iframeWidth').value;
+            const height = document.getElementById('iframeHeight').value;
+            const border = document.getElementById('iframeBorder').value;
+            const scroll = document.getElementById('iframeScroll').value;
+            const fullUrl = BASE_URL + labFile;
+            
+            let styleAttr = `width: ${width}; height: ${height};`;
+            if (border !== 'none') {
+                styleAttr += ` border: ${border};`;
+            } else {
+                styleAttr += ' border: none;';
+            }
+            
+            const plainCode = `<iframe src="${fullUrl}" style="${styleAttr}" scrolling="${scroll}" allowfullscreen></iframe>`;
+            
+            navigator.clipboard.writeText(plainCode).then(() => {
+                const btn = document.querySelector('.copy-btn');
+                btn.textContent = 'Copied!';
+                btn.classList.add('copied');
+                setTimeout(() => {
+                    btn.textContent = 'Copy Code';
+                    btn.classList.remove('copied');
+                }, 2000);
+            });
+        }
+        
+        function copyDirectLink() {
+            const directLink = document.getElementById('directLink').href;
+            navigator.clipboard.writeText(directLink).then(() => {
+                alert('Link copied to clipboard!');
+            });
+        }
+    </script>
+</body>
+</html>
